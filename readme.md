@@ -2,7 +2,7 @@
 
 ## 🚀 Como usar:
 
-1. **Adicionar hosts a serem monitorados
+1. **Adicionar hosts a serem monitorados**
     Os hosts serão monitorados na porta /metrics
     
 2. **Iniciar os containers:**
