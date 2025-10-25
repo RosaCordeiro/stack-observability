@@ -10,7 +10,7 @@ clients:
 
 scrape_configs:
   - job_name: myapp
-    static_configs:  # 🔥 CORRIGIDO: static_configs (com S)
+    static_configs: 
       - targets:
           - localhost
         labels:

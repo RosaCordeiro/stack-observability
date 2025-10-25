@@ -8,7 +8,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro  # ✅ AGORA aponta para arquivo
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -111,6 +111,9 @@ volumes:
 networks:
   monitoring:
     driver: bridge
+<<<<<<< HEAD
   default:
     external:
       name: efk-network
+=======
+>>>>>>> a3c518ddb5ef3b1dc391c8ba13a168363f201b4c
