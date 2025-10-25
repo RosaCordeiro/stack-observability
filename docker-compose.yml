@@ -111,9 +111,6 @@ volumes:
 networks:
   monitoring:
     driver: bridge
-<<<<<<< HEAD
   default:
     external:
       name: efk-network
-=======
->>>>>>> a3c518ddb5ef3b1dc391c8ba13a168363f201b4c
