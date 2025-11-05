@@ -1,6 +1,3 @@
-# docker-compose.yml - VERSÃO CORRIGIDA
-version: '3.8'
-
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -18,18 +15,12 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     restart: unless-stopped
-    networks:
-      - monitoring
-
   pushgateway:
     image: prom/pushgateway:latest
     container_name: pushgateway
     ports:
       - "9091:9091"
     restart: unless-stopped
-    networks:
-      - monitoring
-
   promtail:
     image: grafana/promtail:2.9.0
     volumes:
@@ -37,11 +28,8 @@ services:
       - ./logs:/var/log/app
       - /var/log/myapp:/var/log/myapp
     command: -config.file=/etc/promtail/config.yml
-    networks:
-      - monitoring
     depends_on:
       - loki
-
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
@@ -49,17 +37,11 @@ services:
       - "4318:4318"    # OTLP HTTP (vamos usar este)
     environment:
       - COLLECTOR_OTLP_ENABLED=true
-    networks:
-      - monitoring
-
   loki:
     image: grafana/loki:2.9.0
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - monitoring
-
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -70,17 +52,13 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
-    networks:
-      - monitoring
-
   fluent-bit:
     image: fluent/fluent-bit:2.2
     container_name: fluent-bit
     ports:
-      - "24224:24224"
-      - "24224:24224/udp"
+      - "24224:24224"  # Porta para receber logs
     volumes:
-      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
     depends_on:
       - elasticsearch
 
@@ -90,6 +68,9 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - "indices.id_field_data.enabled=true"
     ports:
       - "9200:9200"
 
@@ -98,19 +79,12 @@ services:
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - NODE_OPTIONS="--no-warnings"
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch
-
 volumes:
   prometheus_data:
   grafana_data:
   es_data:
-
-networks:
-  monitoring:
-    driver: bridge
-  default:
-    external:
-      name: efk-network
